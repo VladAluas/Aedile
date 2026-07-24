@@ -1,0 +1,7 @@
+project: aedile
+
+compose:
+  file: infrastructure/docker-compose.yml
+
+docker:
+  project: aedile
