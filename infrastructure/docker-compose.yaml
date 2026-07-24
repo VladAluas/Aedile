@@ -1,0 +1,44 @@
+services:
+  # PostgreSQL Databases
+  db:
+    image: postgres:15
+    container_name: demo_db
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: demoPa5s!
+      POSTGRES_DB: demodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+
+  # Object Storage (S3-compatible via MinIO)
+  storage:
+    image: minio/minio
+    container_name: demo_storage
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: demoP@ss!
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # Web UI
+    volumes:
+      - storage_data:/data
+
+  # Schema management (Liquibase)
+  liquibase:
+    image: liquibase/liquibase:latest
+    container_name: demo_liquibase
+    depends_on:
+      - db
+    volumes:
+      - ./db/changelog:/liquibase/changelog
+      - ./db/liquibase.properties:/liquibase/liquibase.properties
+      - ./db/drivers:/liquibase/lib
+    working_dir: /liquibase/changelog
+
+volumes:
+  db_data:
+  storage_data:
