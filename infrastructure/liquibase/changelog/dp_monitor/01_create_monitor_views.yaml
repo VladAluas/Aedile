@@ -1,0 +1,299 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202601051000-03
+      author: VladAluas
+      comment: Create the schema for the views 
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'dp_monitor';
+      changes:
+        - sql:
+            sql: CREATE SCHEMA dp_monitor;
+      rollback:
+        - sql:
+            sql: DROP SCHEMA dp_monitor CASCADE; DELETE FROM pg_namespace WHERE nspname = 'dp_monitor';
+
+  - changeSet:
+      id: 202601051001-03
+      author: VladAluas
+      labels: batch-module-view
+      comment: View for the batch module to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Config_BatchModule
+              AS
+              SELECT
+                 bm.BATCH_MODULE_ID
+                ,b.BATCH_CODE
+                ,m.MODULE_CODE
+                ,bm.IS_INITIAL_FULL
+                ,l.LAYER_CODE                   AS MODULE_LAYER_CODE
+                ,(bm.PRIORITY * l.PRIORITY)     AS PRIORITY
+                ,bm.MODULE_SCRIPT
+              FROM dp_ctrl.BATCH_MODULE bm
+              LEFT JOIN dp_ctrl.BATCH    b ON b.BATCH_ID  = bm.BATCH_ID
+              LEFT JOIN dp_ctrl.MODULE   m ON m.MODULE_ID = bm.MODULE_ID
+              LEFT JOIN dp_ctrl.LAYER    l ON l.LAYER_ID  = bm.MODULE_LAYER_ID
+              WHERE 1 = 1
+                AND b.IS_ACTIVE = 'Y'
+                AND m.IS_ACTIVE = 'Y'
+              ORDER BY PRIORITY
+
+  - changeSet:
+      id: 202601051002-03
+      author: VladAluas
+      labels: batch-parameters-view
+      comment: View for the batch parameters to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Config_BatchParameters
+              AS
+              SELECT
+                 bp.BATCH_PARAMETER_ID
+                ,bt.BATCH_CODE
+                ,pr.PARAMETER_CODE
+                ,bp.PARAMETER_VALUE
+                ,bp.CREATE_DATE
+                ,bp.UPDATE_DATE
+              FROM dp_ctrl.BATCH_PARAMETERS bp
+              LEFT JOIN dp_ctrl.BATCH     bt ON bp.BATCH_ID     = bt.BATCH_ID
+              LEFT JOIN dp_ctrl.PARAMETER pr ON bp.PARAMETER_ID = pr.PARAMETER_ID
+              WHERE 1 = 1
+                AND bt.IS_ACTIVE = 'Y'
+                AND pr.IS_ACTIVE = 'Y'
+              ORDER BY BATCH_CODE, PARAMETER_CODE
+
+  - changeSet:
+      id: 202601051003-03
+      author: VladAluas
+      labels: batch-module-view
+      comment: View for the module parameters to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Config_ModuleParameters
+              AS
+              SELECT
+                 mp.MODULE_PARAMETER_ID
+                ,md.MODULE_CODE
+                ,pr.PARAMETER_CODE
+                ,mp.PARAMETER_VALUE
+                ,mp.CREATE_DATE
+                ,mp.UPDATE_DATE
+              FROM dp_ctrl.MODULE_PARAMETERS mp
+              LEFT JOIN dp_ctrl.MODULE       md ON mp.MODULE_ID = md.MODULE_ID
+              LEFT JOIN dp_ctrl.PARAMETER pr ON mp.PARAMETER_ID = pr.PARAMETER_ID
+              WHERE 1 = 1
+                AND md.IS_ACTIVE = 'Y'
+                AND pr.IS_ACTIVE = 'Y'
+              ORDER BY MODULE_CODE, PARAMETER_CODE
+
+  - changeSet:
+      id: 202606191700-01
+      author: VladAluas
+      labels: batch-module-parameters-view
+      comment: View for the module parameters to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Config_BatchModuleParameters
+              AS
+              WITH BatchModule AS
+              (SELECT
+                bm.BATCH_MODULE_ID
+                ,b.BATCH_ID
+                ,m.MODULE_ID
+                ,b.BATCH_CODE
+                ,m.MODULE_CODE
+                ,bm.IS_INITIAL_FULL
+                ,bm.MODULE_LAYER_ID
+                ,l.LAYER_CODE                   AS MODULE_LAYER_CODE
+                ,(bm.PRIORITY * l.PRIORITY)     AS PRIORITY
+                ,bm.MODULE_SCRIPT
+              FROM dp_ctrl.BATCH_MODULE bm
+              LEFT JOIN dp_ctrl.BATCH    b ON b.BATCH_ID  = bm.BATCH_ID
+              LEFT JOIN dp_ctrl.MODULE   m ON m.MODULE_ID = bm.MODULE_ID
+              LEFT JOIN dp_ctrl.LAYER    l ON l.LAYER_ID  = bm.MODULE_LAYER_ID
+              WHERE 1 = 1
+                AND b.IS_ACTIVE = 'Y'
+                AND m.IS_ACTIVE = 'Y'
+              )
+
+              , BatchParameters AS
+              (SELECT
+                bp.BATCH_ID
+                ,jsonb_object_agg(pr.PARAMETER_CODE,bp.PARAMETER_VALUE) AS BATCH_PARAMETERS
+              FROM dp_ctrl.BATCH_PARAMETERS bp
+              LEFT JOIN dp_ctrl.BATCH       bt ON bp.BATCH_ID     = bt.BATCH_ID
+              LEFT JOIN dp_ctrl.PARAMETER   pr ON bp.PARAMETER_ID = pr.PARAMETER_ID
+              WHERE 1 = 1
+                AND bt.IS_ACTIVE = 'Y'
+                AND pr.IS_ACTIVE = 'Y'
+              GROUP BY bp.BATCH_ID
+              )
+
+              , ModuleParameters AS
+              (SELECT
+                mp.MODULE_ID
+                ,jsonb_object_agg(pr.PARAMETER_CODE,mp.PARAMETER_VALUE) AS MODULE_PARAMETERS
+              FROM dp_ctrl.MODULE_PARAMETERS mp
+              LEFT JOIN dp_ctrl.MODULE       md ON mp.MODULE_ID    = md.MODULE_ID
+              LEFT JOIN dp_ctrl.PARAMETER    pr ON mp.PARAMETER_ID = pr.PARAMETER_ID
+              WHERE 1 = 1
+                AND md.IS_ACTIVE = 'Y'
+                AND pr.IS_ACTIVE = 'Y'
+              GROUP BY mp.MODULE_ID
+              )
+              SELECT
+                 bm.BATCH_MODULE_ID
+                ,bm.BATCH_ID
+                ,bm.BATCH_CODE
+                ,bm.MODULE_ID
+                ,bm.MODULE_CODE
+                ,bm.IS_INITIAL_FULL
+                ,bm.MODULE_LAYER_ID
+                ,bm.MODULE_LAYER_CODE
+                ,bm.PRIORITY
+                ,bm.MODULE_SCRIPT
+                ,bp.BATCH_PARAMETERS
+                ,mp.MODULE_PARAMETERS
+              FROM BatchModule      bm
+              JOIN BatchParameters  bp ON bp.BATCH_ID  = bm.BATCH_ID
+              JOIN ModuleParameters mp ON mp.MODULE_ID = bm.MODULE_ID
+              ORDER BY PRIORITY
+
+  - changeSet:
+      id: 202601051004-03
+      author: VladAluas
+      labels: log-batch-run-view
+      comment: View for the historical batch run to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Log_BatchRun
+              AS
+              SELECT
+                 lbr.BATCH_RUN_ID
+                ,b.BATCH_CODE
+                ,lbr.STATUS                      AS BATCH_RUN_STATUS
+                ,lbr.REPROCESS_RUN               AS BATCH_REPROCESS_RUN
+                ,lbr.START_TIME                  AS BATCH_START_TIME
+                ,lbr.END_TIME                    AS BATCH_END_TIME
+                ,lbr.REPROCESS_START_TIME        AS BATCH_REPROCESS_START_TIME
+                ,lbr.REPROCESS_END_TIME          AS BATCH_REPROCESS_END_TIME
+              FROM dp_ctrl.LOG_BATCH_RUN lbr
+              LEFT JOIN dp_ctrl.BATCH      b ON b.BATCH_ID = lbr.BATCH_ID
+              WHERE 1 = 1
+                AND b.IS_ACTIVE = 'Y'
+
+  - changeSet:
+      id: 202601051005-03
+      author: VladAluas
+      labels: log-module-run-view
+      comment: View for the historical module run to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Log_ModuleRun
+              AS
+              SELECT
+                 lbr.BATCH_RUN_ID
+                ,b.BATCH_CODE
+                ,lmr.MODULE_RUN_ID
+                ,m.MODULE_CODE
+                ,lmr.STATUS                      AS MODULE_RUN_STATUS
+                ,lmr.REPROCESS_RUN               AS MODULE_REPROCESS_RUN
+                ,lmr.START_TIME                  AS MODULE_START_TIME
+                ,lmr.END_TIME                    AS MODULE_END_TIME
+                ,lmr.REPROCESS_START_TIME        AS MODULE_REPROCESS_START_TIME
+                ,lmr.REPROCESS_END_TIME          AS MODULE_REPROCESS_END_TIME
+              FROM dp_ctrl.LOG_MODULE_RUN lmr
+              LEFT JOIN dp_ctrl.MODULE          m ON m.MODULE_ID      = lmr.MODULE_ID
+              LEFT JOIN dp_ctrl.LOG_BATCH_RUN lbr ON lbr.BATCH_RUN_ID = lmr.BATCH_RUN_ID
+              LEFT JOIN dp_ctrl.BATCH           b ON b.BATCH_ID       = lbr.BATCH_ID
+              WHERE 1 = 1
+                AND m.IS_ACTIVE = 'Y'
+              ORDER BY lbr.BATCH_RUN_ID, lmr.START_TIME
+
+  - changeSet:
+      id: 202601051006-03
+      author: VladAluas
+      labels: log-layer-run-view
+      comment: View for the historical layer run to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Log_LayerRun
+              AS
+              SELECT
+                 lbr.BATCH_RUN_ID
+                ,b.BATCH_CODE
+                ,llr.LAYER_RUN_ID
+                ,l.LAYER_CODE
+                ,llr.STATUS                      AS LAYER_RUN_STATUS
+                ,llr.REPROCESS_RUN               AS LAYER_REPROCESS_RUN
+                ,llr.START_TIME                  AS LAYER_START_TIME
+                ,llr.END_TIME                    AS LAYER_END_TIME
+                ,llr.REPROCESS_START_TIME        AS LAYER_REPROCESS_START_TIME
+                ,llr.REPROCESS_END_TIME          AS LAYER_REPROCESS_END_TIME
+              FROM dp_ctrl.LOG_LAYER_RUN llr
+              LEFT JOIN dp_ctrl.LAYER           l ON l.LAYER_ID       = llr.LAYER_ID
+              LEFT JOIN dp_ctrl.LOG_BATCH_RUN lbr ON lbr.BATCH_RUN_ID = llr.BATCH_RUN_ID
+              LEFT JOIN dp_ctrl.BATCH           b ON b.BATCH_ID       = lbr.BATCH_ID
+              WHERE 1 = 1
+                AND l.IS_ACTIVE = 'Y'
+              ORDER BY lbr.BATCH_RUN_ID, llr.START_TIME
+
+  - changeSet:
+      id: 202601051007-03
+      author: VladAluas
+      labels: log-batch-module-run-view
+      comment: View for the historical batch module run to be easier to read
+      changes:
+        - sql:
+            sql: |
+              CREATE VIEW dp_monitor.v_Log_BatchModuleRun
+              AS
+              SELECT
+                 lbr.BATCH_RUN_ID
+                ,b.BATCH_CODE
+                ,l.LAYER_CODE
+                ,m.MODULE_CODE
+                ,lmr.STATUS                      AS MODULE_RUN_STATUS
+                ,lmr.REPROCESS_RUN               AS MODULE_REPROCESS_RUN
+                ,llr.STATUS                      AS LAYER_RUN_STATUS
+                ,llr.REPROCESS_RUN               AS LAYER_REPROCESS_RUN
+                ,lbr.STATUS                      AS BATCH_RUN_STATUS
+                ,lbr.REPROCESS_RUN               AS BATCH_REPROCESS_RUN
+                ,lmr.START_TIME                  AS MODULE_START_TIME
+                ,lmr.END_TIME                    AS MODULE_END_TIME
+                ,llr.START_TIME                  AS LAYER_START_TIME
+                ,llr.END_TIME                    AS LAYER_END_TIME
+                ,lbr.START_TIME                  AS BATCH_START_TIME
+                ,lbr.END_TIME                    AS BATCH_END_TIME
+                ,lmr.REPROCESS_START_TIME        AS MODULE_REPROCESS_START_TIME
+                ,lmr.REPROCESS_END_TIME          AS MODULE_REPROCESS_END_TIME
+                ,llr.REPROCESS_START_TIME        AS LAYER_REPROCESS_START_TIME
+                ,llr.REPROCESS_END_TIME          AS LAYER_REPROCESS_END_TIME
+                ,lbr.REPROCESS_START_TIME        AS BATCH_REPROCESS_START_TIME
+                ,lbr.REPROCESS_END_TIME          AS BATCH_REPROCESS_END_TIME
+              FROM dp_ctrl.LOG_BATCH_RUN lbr
+              LEFT JOIN dp_ctrl.LOG_LAYER_RUN  llr ON llr.BATCH_RUN_ID = lbr.BATCH_RUN_ID
+              LEFT JOIN dp_ctrl.LOG_MODULE_RUN lmr ON lmr.BATCH_RUN_ID = lbr.BATCH_RUN_ID AND lmr.LAYER_RUN_ID = llr.LAYER_RUN_ID
+              LEFT JOIN dp_ctrl.BATCH            b ON b.BATCH_ID       = lbr.BATCH_ID
+              LEFT JOIN dp_ctrl.LAYER            l ON l.LAYER_ID       = llr.LAYER_ID
+              LEFT JOIN dp_ctrl.MODULE           m ON m.MODULE_ID      = lmr.MODULE_ID
+              WHERE 1 = 1
+                AND b.IS_ACTIVE = 'Y'
+                AND l.IS_ACTIVE = 'Y'
+                AND m.IS_ACTIVE = 'Y'
+              ORDER BY lbr.BATCH_RUN_ID
+                      ,l.CREATE_DATE
+                      ,m.CREATE_DATE
+                      ,lbr.START_TIME
+                      ,llr.START_TIME
+                      ,lmr.START_TIME

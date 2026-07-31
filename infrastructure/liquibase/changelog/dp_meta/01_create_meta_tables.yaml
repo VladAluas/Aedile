@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202506181199-00
+      author: VladAluas
+      comment: Create the schema for the table metadata
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'dp_meta'
+      changes:
+        - sql:
+            sql: CREATE SCHEMA dp_meta
+      rollback:
+        - sql:
+            sql: DROP SCHEMA dp_meta CASCADE; DELETE FROM pg_namespace WHERE nspname = 'dp_meta'
+  - changeSet:
+      id: 202512181100-01
+      author: VladAluas
+      labels: source-table
+      comment: table for storing the data sources
+      changes:
+        - createTable:
+            tableName: MD_SOURCE
+            schemaName: dp_meta
+            columns:
+              - column:
+                  name: SOURCE_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: SOURCE_CODE
+                  type: varchar(4000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(4000)
+              - column:
+                  name: PRIORITY
+                  type: int
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: BATCH_MODULE
+            schemaName: dp_ctrl

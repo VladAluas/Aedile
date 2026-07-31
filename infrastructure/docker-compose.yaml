@@ -1,43 +1,63 @@
+name: aedile
+
 services:
-  # PostgreSQL Databases
   db:
     image: postgres:15
-    container_name: demo_db
+    restart: unless-stopped
+
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: demoPa5s!
       POSTGRES_DB: demodb
+
     ports:
       - "5432:5432"
+
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
+      - ./postgres/init:/docker-entrypoint-initdb.d
 
-  # Object Storage (S3-compatible via MinIO)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d demodb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   storage:
     image: minio/minio
-    container_name: demo_storage
+    restart: unless-stopped
+
     command: server /data --console-address ":9001"
+
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: demoP@ss!
+
     ports:
-      - "9000:9000"   # API
-      - "9001:9001"   # Web UI
+      - "9000:9000"
+      - "9001:9001"
+
     volumes:
       - storage_data:/data
 
-  # Schema management (Liquibase)
   liquibase:
     image: liquibase/liquibase:latest
-    container_name: demo_liquibase
+
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
     volumes:
-      - ./db/changelog:/liquibase/changelog
-      - ./db/liquibase.properties:/liquibase/liquibase.properties
-      - ./db/drivers:/liquibase/lib
-    working_dir: /liquibase/changelog
+      - ./liquibase/changelog:/liquibase/changelog:ro
+      - ./liquibase/liquibase.properties:/liquibase/liquibase.properties:ro
+      - ./liquibase/drivers:/liquibase/lib:ro
+
+    command:
+      - "--defaults-file=/liquibase/liquibase.properties"
+      - "update"
+
+    profiles:
+      - tools
 
 volumes:
   db_data:

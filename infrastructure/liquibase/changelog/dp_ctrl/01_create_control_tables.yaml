@@ -1,0 +1,679 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509181000-01
+      author: VladAluas
+      comment: Create the schema for the tables
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'dp_ctrl';
+      changes:
+        - sql:
+            sql: CREATE SCHEMA dp_ctrl
+      rollback:
+        - sql:
+            sql: DROP SCHEMA dp_ctrl CASCADE; DELETE FROM pg_namespace WHERE nspname = 'dp_ctrl';
+
+  # OBJECTS
+  - changeSet:
+      id: 202509181001-01
+      author: VladAluas
+      labels: batch-table
+      comment: table for creating batches for processing
+      changes:
+        - createTable:
+            tableName: BATCH
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: BATCH_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_CODE
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: IS_ACTIVE
+                  type: varchar(1)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: BATCH
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202509181002-01
+      author: VladAluas
+      labels: module-table
+      comment: table for storing the modules for batch processing
+      changes:
+        - createTable:
+            tableName: MODULE
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: MODULE_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: MODULE_CODE
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: IS_ACTIVE
+                  type: varchar(1)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: MODULE
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202509181003-01
+      author: VladAluas
+      labels: parameter-table
+      comment: table for storing the parameters for the ELT, for both batches and modules
+      changes:
+        - createTable:
+            tableName: PARAMETER
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: PARAMETER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: PARAMETER_CODE
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: IS_ACTIVE
+                  type: varchar(1)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: PARAMETER
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202509181004-01
+      author: VladAluas
+      labels: layer-table
+      comment: table for storing the layers of the ETL
+      changes:
+        - createTable:
+            tableName: LAYER
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: LAYER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: LAYER_CODE
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: IS_ACTIVE
+                  type: varchar(1)
+              - column:
+                  name: PRIORITY
+                  type: int
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LAYER
+            schemaName: dp_ctrl
+
+  # RELATIONSHIPS
+  - changeSet:
+      id: 202509181005-01
+      author: VladAluas
+      labels: batch-module-table
+      comment: table for storing the modules and the relations between them in batches
+      changes:
+        - createTable:
+            tableName: BATCH_MODULE
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: BATCH_MODULE_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BM_BatchID
+                    references: dp_ctrl.BATCH(BATCH_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: MODULE_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BM_ModuleID
+                    references: dp_ctrl.MODULE(MODULE_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: MODULE_LAYER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BM_ModuleLayerID
+                    references: dp_ctrl.LAYER(LAYER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: MODULE_SCRIPT
+                  type: varchar(150)
+              - column:
+                  name: PRIORITY
+                  type: int
+              - column:
+                  name: IS_INITIAL_FULL
+                  type: varchar(1)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+        - addUniqueConstraint:
+            tableName: BATCH_MODULE
+            schemaName: dp_ctrl
+            columnNames: BATCH_ID, MODULE_LAYER_ID, MODULE_ID
+            constraintName: uq_batch_module_nk
+      rollback:
+        - dropTable:
+            tableName: BATCH_MODULE
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202509181006-01
+      author: VladAluas
+      labels: batch-parameters-table
+      comment: table for storing the parameters for the batches. Intended for fixed parameters
+      changes:
+        - createTable:
+            tableName: BATCH_PARAMETERS
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: BATCH_PARAMETER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BP_BatchID
+                    references: dp_ctrl.BATCH(BATCH_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BP_ParameterID
+                    references: dp_ctrl.PARAMETER(PARAMETER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_VALUE
+                  type: varchar(150)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+        - addUniqueConstraint:
+            tableName: BATCH_PARAMETERS
+            schemaName: dp_ctrl
+            columnNames: BATCH_ID, PARAMETER_ID
+            constraintName: uq_batch_parameter_nk
+      rollback:
+        - dropTable:
+            tableName: BATCH_PARAMETERS
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202509181007-01
+      author: VladAluas
+      labels: module-parameters-table
+      comment: table for storing the parameters for the modules. Intended for fixed parameters
+      changes:
+        - createTable:
+            tableName: MODULE_PARAMETERS
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: MODULE_PARAMETER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: MODULE_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MP_ModuleID
+                    references: dp_ctrl.MODULE(MODULE_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MP_ParameterID
+                    references: dp_ctrl.PARAMETER(PARAMETER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_VALUE
+                  type: varchar(150)
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+        - addUniqueConstraint:
+            tableName: MODULE_PARAMETERS
+            schemaName: dp_ctrl
+            columnNames: MODULE_ID, PARAMETER_ID
+            constraintName: uq_module_parameter_nk
+      rollback:
+        - dropTable:
+            tableName: MODULE_PARAMETERS
+            schemaName: dp_ctrl
+
+  # MONITORING
+  - changeSet:
+      id: 202512191200-01
+      author: VladAluas
+      labels: batch-run-table
+      comment: table for logging and controling the batch run
+      changes:
+        - createTable:
+            tableName: LOG_BATCH_RUN
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: BATCH_RUN_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BR_BatchID
+                    references: dp_ctrl.BATCH(BATCH_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: STATUS
+                  type: varchar(50)
+              - column:
+                  name: REPROCESS_RUN
+                  type: varchar(1)
+              - column:
+                  name: START_TIME
+                  type: datetime
+              - column:
+                  name: END_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_START_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_END_TIME
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_BATCH_RUN
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202512191202-01
+      author: VladAluas
+      labels: layer-run-table
+      comment: table for logging and controling the batch run
+      changes:
+        - createTable:
+            tableName: LOG_LAYER_RUN
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: LAYER_RUN_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_LR_BatchRunID
+                    references: dp_ctrl.LOG_BATCH_RUN(BATCH_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: LAYER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_LR_LayerID
+                    references: dp_ctrl.LAYER(LAYER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: STATUS
+                  type: varchar(50)
+              - column:
+                  name: REPROCESS_RUN
+                  type: varchar(1)
+              - column:
+                  name: START_TIME
+                  type: datetime
+              - column:
+                  name: END_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_START_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_END_TIME
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_LAYER_RUN
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202512191201-01
+      author: VladAluas
+      labels: module-run-table
+      comment: table for logging and controling the batch run
+      changes:
+        - createTable:
+            tableName: LOG_MODULE_RUN
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: MODULE_RUN_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MR_BatchRunID
+                    references: dp_ctrl.LOG_BATCH_RUN(BATCH_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: LAYER_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MR_LayerRunID
+                    references: dp_ctrl.LOG_LAYER_RUN(LAYER_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: MODULE_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MR_ModuleID
+                    references: dp_ctrl.MODULE(MODULE_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: STATUS
+                  type: varchar(50)
+              - column:
+                  name: REPROCESS_RUN
+                  type: varchar(1)
+              - column:
+                  name: START_TIME
+                  type: datetime
+              - column:
+                  name: END_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_START_TIME
+                  type: datetime
+              - column:
+                  name: REPROCESS_END_TIME
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_MODULE_RUN
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202512191203-01
+      author: VladAluas
+      labels: log-files-table
+      comment: logging table for the data lake files from the ETL
+      changes:
+        - createTable:
+            tableName: LOG_MODULE_FILES
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: FILE_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: FILE_NAME
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATOR_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MF_ModuleRunID
+                    references: dp_ctrl.LOG_MODULE_RUN(MODULE_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: FILE_RELATIVE_PATH
+                  type: varchar(50)
+              - column:
+                  name: FILE_FULL_PATH
+                  type: varchar(150)
+              - column:
+                  name: IS_PROCESSED
+                  type: varchar(1)
+              - column:
+                  name: REPROCESSED_FILE
+                  type: varchar(1)
+              - column:
+                  name: CREATE_DATE
+                  type: datetime
+              - column:
+                  name: UPDATE_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_MODULE_FILES
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202512191204-01
+      author: VladAluas
+      labels: batch-run-parameters-table
+      comment: table for monitoring the parameters used in each batch run
+      changes:
+        - createTable:
+            tableName: LOG_BATCH_RUN_PARAMETERS
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: BATCH_RUN_PARAMETER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: BATCH_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BP_BatchRunID
+                    references: dp_ctrl.LOG_BATCH_RUN(BATCH_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: BATCH_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BP_BatchID
+                    references: dp_ctrl.BATCH(BATCH_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_BP_ParameterID
+                    references: dp_ctrl.PARAMETER(PARAMETER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_VALUE
+                  type: varchar(150)
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: PROCESS_DATE
+                  type: datetime
+              - column:
+                  name: REPROCESS_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_BATCH_RUN_PARAMETERS
+            schemaName: dp_ctrl
+
+  - changeSet:
+      id: 202512191205-01
+      author: VladAluas
+      labels: module-run-parameters-table
+      comment: table for monitoring the parameters used in each module run
+      changes:
+        - createTable:
+            tableName: LOG_MODULE_RUN_PARAMETERS
+            schemaName: dp_ctrl
+            columns:
+              - column:
+                  name: MODULE_RUN_PARAMETER_ID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: MODULE_RUN_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MP_ModuleRunID
+                    references: dp_ctrl.LOG_MODULE_RUN(MODULE_RUN_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: MODULE_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MP_ModuleID
+                    references: dp_ctrl.MODULE(MODULE_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_MP_ParameterID
+                    references: dp_ctrl.PARAMETER(PARAMETER_ID)
+                    deleteCascade: true
+                    nullable: false
+              - column:
+                  name: PARAMETER_VALUE
+                  type: varchar(150)
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(150)
+              - column:
+                  name: PROCESS_DATE
+                  type: datetime
+              - column:
+                  name: REPROCESS_DATE
+                  type: datetime
+      rollback:
+        - dropTable:
+            tableName: LOG_MODULE_RUN_PARAMETERS
+            schemaName: dp_ctrl
