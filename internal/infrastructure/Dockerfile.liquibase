@@ -1,3 +1,0 @@
-FROM liquibase/liquibase:latest
-
-ADD https://jdbc.postgresql.org/download/postgresql-42.7.3.jar /liquibase/lib/
