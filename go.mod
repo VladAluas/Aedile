@@ -3,6 +3,7 @@ module github.com/VladAluas/Aedile
 go 1.25.4
 
 require (
+	github.com/lib/pq v1.12.3
 	github.com/spf13/cobra v1.10.2
 	gopkg.in/yaml.v3 v3.0.1
 )
