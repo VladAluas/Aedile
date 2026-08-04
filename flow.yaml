@@ -5,3 +5,10 @@ compose:
 
 docker:
   project: aedile
+
+database:
+  host: localhost
+  port: 5432
+  user: myuser
+  pass: demoPa5s!
+  name: demodb
