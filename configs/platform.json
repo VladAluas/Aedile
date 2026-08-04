@@ -1,0 +1,241 @@
+{
+  "BATCH": [
+    {
+      "BATCH_CODE": "GAPMINDER_BATCH",
+      "BATCH_DESCRIPTION": "Batch designed to extract data from the gapminder project's GIT Repository",
+      "BATCH_IS_ACTIVE": "Y",
+      "BATCH_PARAMETERS": {
+        "run_type": "INCREMENTAL",
+        "triggered_by": "SCHEDULED_JOB",
+        "max_retry": 3,
+        "page_url": "https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/"
+      },
+      "LAYERS": [
+        {
+          "LAYER_CODE": "BRONZE_LAYER",
+          "DESCRIPTION": "Raw layer from the source to the data lake",
+          "IS_ACTIVE": "Y",
+          "PRIORITY": 10,
+          "MODULES": [
+            {
+              "MODULE_CODE": "m_100_UNEMPLOYMENT_15_PLUS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
+              "PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "file_url",
+                  "PARAMETER_VALUE": "countries-etc-datapoints/ddf--datapoints--aged_15plus_unemployment_rate_percent--by--geo--time.csv",
+                  "DESCRIPTION": "The URL for the source file within GIT",
+                  "IS_ACTIVE": "Y"
+                },
+                {
+                  "PARAMETER_CODE": "bronze_path",
+                  "PARAMETER_VALUE": "data/BRONZE/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_100_RAW_TEST_LANDLOCKED",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
+              "MODULE_PRIORITY": 2,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "file_url",
+                  "PARAMETER_VALUE": "ddf--entities--geo--landlocked.csv",
+                  "DESCRIPTION": "parameter for testing modules",
+                  "IS_ACTIVE": "Y"
+                },
+                {
+                  "PARAMETER_CODE": "bronze_path",
+                  "PARAMETER_VALUE": "data/BRONZE/TEST",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_100_LABOUR_FORCE_PARTICIPATION_25_54",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
+              "MODULE_PRIORITY": 2,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "file_url",
+                  "PARAMETER_VALUE": "countries-etc-datapoints/ddf--datapoints--aged_25_54_labour_force_participation_rate_percent--by--geo--time.csv",
+                  "DESCRIPTION": "parameter for testing modules",
+                  "IS_ACTIVE": "Y"
+                },
+                {
+                  "PARAMETER_CODE": "bronze_path",
+                  "PARAMETER_VALUE": "data/BRONZE/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_100_TB_INCIDENCE_ALL_FORMS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
+              "MODULE_PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "file_url",
+                  "PARAMETER_VALUE": "countries-etc-datapoints/ddf--datapoints--all_forms_of_tb_incidence_and_number_of_new_cases_reported--by--geo--time.csv",
+                  "DESCRIPTION": "parameter for testing modules",
+                  "IS_ACTIVE": "Y"
+                },
+                {
+                  "PARAMETER_CODE": "bronze_path",
+                  "PARAMETER_VALUE": "data/BRONZE/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "LAYER_CODE": "SILVER_LAYER",
+          "DESCRIPTION": "Cleaning layer from data lake to data lake",
+          "IS_ACTIVE": "Y",
+          "PRIORITY": 100,
+          "MODULES": [
+            {
+              "MODULE_CODE": "m_200_UNEMPLOYMENT_15_PLUS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Transformers/gapminder.py",
+              "MODULE_PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "silver_path",
+                  "PARAMETER_VALUE": "data/SILVER/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_200_LABOUR_FORCE_PARTICIPATION_25_54",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Transformers/gapminder.py",
+              "MODULE_PRIORITY": 2,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "silver_path",
+                  "PARAMETER_VALUE": "data/SILVER/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_200_RAW_TEST_LANDLOCKED",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Transformers/gapminder.py",
+              "MODULE_PRIORITY": 2,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "silver_path",
+                  "PARAMETER_VALUE": "data/SILVER/TEST",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_200_TB_INCIDENCE_ALL_FORMS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "Y",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Transformers/gapminder.py",
+              "MODULE_PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "silver_path",
+                  "PARAMETER_VALUE": "data/SILVER/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "Y"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "LAYER_CODE": "GOLD_LAYER",
+          "DESCRIPTION": "Loading layer from data lake to target",
+          "IS_ACTIVE": "N",
+          "PRIORITY": 1000,
+          "MODULES": [
+            {
+              "MODULE_CODE": "m_300_UNEMPLOYMENT_15_PLUS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "N",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Processing/gapminder.py",
+              "MODULE_PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "gold_path",
+                  "PARAMETER_VALUE": "data/GOLD/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "N"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_300_LABOUR_FORCE_PARTICIPATION_25_54",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "N",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Processing/gapminder.py",
+              "MODULE_PRIORITY": 2,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "gold_path",
+                  "PARAMETER_VALUE": "data/GOLD/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "N"
+                }
+              ]
+            },
+            {
+              "MODULE_CODE": "m_300_TB_INCIDENCE_ALL_FORMS",
+              "DESCRIPTION": "Module for testing the pipelines",
+              "IS_ACTIVE": "N",
+              "IS_INITIAL_FULL": "Y",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Processing/gapminder.py",
+              "MODULE_PRIORITY": 1,
+              "PARAMETERS": [
+                {
+                  "PARAMETER_CODE": "gold_path",
+                  "PARAMETER_VALUE": "data/GOLD/gapminder",
+                  "DESCRIPTION": "Files system path for the file",
+                  "IS_ACTIVE": "N"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
