@@ -18,9 +18,11 @@ func NewRunCommand() *cobra.Command {
 				return err
 			}
 
-			return platform.
-				New(cfg).
-				Run(context.Background())
+			p, err := platform.New(cfg)
+			if err != nil {
+				return err
+			}
+			return p.Run(context.Background())
 		},
 	}
 }

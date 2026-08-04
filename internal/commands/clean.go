@@ -21,10 +21,12 @@ func NewCleanCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			p, err := platform.New(cfg)
+			if err != nil {
+				return err
+			}
 
-			return platform.
-				New(cfg).
-				Clean(context.Background(), all)
+			return p.Clean(context.Background(), all)
 		},
 	}
 

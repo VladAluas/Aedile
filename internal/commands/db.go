@@ -15,6 +15,7 @@ func NewDBCommand() *cobra.Command {
 	}
 
 	db.AddCommand(NewMigrateCommand())
+	db.AddCommand(NewSeedCommand())
 
 	return db
 }
@@ -29,9 +30,30 @@ func NewMigrateCommand() *cobra.Command {
 				return err
 			}
 
-			return platform.
-				New(cfg).
-				Migrate(context.Background())
+			p, err := platform.New(cfg)
+			if err != nil {
+				return err
+			}
+			return p.Migrate(context.Background())
+		},
+	}
+}
+
+func NewSeedCommand() *cobra.Command {
+	return &cobra.Command{
+		Use: "seed",
+		Short: "Run Liquibase seed",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+
+			p, err := platform.New(cfg)
+			if err != nil {
+				return err
+			}
+			return p.Seed(context.Background())
 		},
 	}
 }

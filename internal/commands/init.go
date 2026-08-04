@@ -18,7 +18,11 @@ func NewInitCommand() *cobra.Command {
 				return err
 			}
 
-			return platform.New(cfg).Init(context.Background())
+			p, err := platform.New(cfg)
+			if err != nil {
+				return err
+			}
+			return p.Init(context.Background())
 		},
 	}
 }

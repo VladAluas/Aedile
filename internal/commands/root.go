@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 
 func Root() *cobra.Command {
 	root := &cobra.Command{
-		Use:   "flow",
+		Use:   "aedile",
 		Short: "Developer CLI for the DataForge platform",
 		Long: `Flow manages the local DataForge platform.
 					 It provides commands to manage infrastructure,
