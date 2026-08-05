@@ -22,7 +22,7 @@
               "DESCRIPTION": "Module for testing the pipelines",
               "IS_ACTIVE": "Y",
               "IS_INITIAL_FULL": "Y",
-              "SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
+              "MODULE_SCRIPT": "/app/src/dataforge_etl/Extractors/gapminder.py",
               "PRIORITY": 1,
               "PARAMETERS": [
                 {
