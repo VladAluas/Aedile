@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - includeAll:
+      path: dp_ctrl
+  - includeAll:
+      path: dp_meta
+  - includeAll:
+      path: dp_monitor
