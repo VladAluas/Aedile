@@ -328,9 +328,6 @@ databaseChangeLog:
                   name: PARAMETER_VALUE
                   type: varchar(150)
               - column:
-                  name: DESCRIPTION
-                  type: varchar(150)
-              - column:
                   name: CREATE_DATE
                   type: datetime
               - column:
