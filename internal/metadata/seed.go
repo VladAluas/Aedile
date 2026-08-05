@@ -44,16 +44,23 @@ func Seed(ctx context.Context, db *sql.DB, cfg *Config) error {
 					if err := UpsertModuleParameters(ctx, tx,  mdl, prm); err != nil {
 						return err
 					}
-
-					if err := UpsertBatchParameters(ctx, tx, btc, prm); err != nil {
-						return err
-					}
 				}
 
 				if err := UpsertBatchModule(ctx, tx, btc, lyr, mdl); err != nil {
 					return err
 				}
-			}
+
+				for _, params := range batch.Parameters {
+					prm, err := UpsertParameters(ctx, tx, params)
+					if err != nil {
+						return err
+					}
+
+					if err := UpsertBatchParameters(ctx, tx, btc, prm); err != nil {
+						return err
+					}
+				}
+	 		}
 		}
 	}
 
