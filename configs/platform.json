@@ -4,12 +4,32 @@
       "BATCH_CODE": "GAPMINDER_BATCH",
       "BATCH_DESCRIPTION": "Batch designed to extract data from the gapminder project's GIT Repository",
       "BATCH_IS_ACTIVE": "Y",
-      "BATCH_PARAMETERS": {
-        "run_type": "INCREMENTAL",
-        "triggered_by": "SCHEDULED_JOB",
-        "max_retry": 3,
-        "page_url": "https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/"
-      },
+      "BATCH_PARAMETERS": [
+        {
+          "PARAMETER_CODE": "RUN_TYPE",
+          "PARAMETER_VALUE": "INCREMENTAL",
+          "DESCRIPTION": "Type of run for the Batch",
+          "IS_ACTIVE": "Y"
+        },
+        {
+          "PARAMETER_CODE": "triggered_by",
+          "PARAMETER_VALUE": "SCHEDULED_JOB",
+          "DESCRIPTION": "Type of trigger",
+          "IS_ACTIVE": "Y"
+        },
+        {
+          "PARAMETER_CODE": "max_retry",
+          "PARAMETER_VALUE": "3",
+          "DESCRIPTION": "Self Explanatory",
+          "IS_ACTIVE": "Y"
+        },
+        {
+          "PARAMETER_CODE": "page_url",
+          "PARAMETER_VALUE": "https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/",
+          "DESCRIPTION": "Source page URL",
+          "IS_ACTIVE": "Y"
+        }
+      ],
       "LAYERS": [
         {
           "LAYER_CODE": "BRONZE_LAYER",

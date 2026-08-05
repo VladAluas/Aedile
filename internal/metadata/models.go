@@ -11,7 +11,7 @@ type Batch struct {
 	BatchCode   string      `json:"BATCH_CODE"`
 	Description string      `json:"BATCH_DESCRIPTION"`
 	IsActive    string      `json:"BATCH_IS_ACTIVE"`
-	Parameters  []Parameter `json:"PARAMETER"`
+	Parameters  []Parameter `json:"BATCH_PARAMETERS"`
 	Layers      []Layer     `json:"LAYERS"`
 }
 
