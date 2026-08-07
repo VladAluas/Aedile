@@ -1,0 +1,11 @@
+{{ define "postgres" }}
+  db:
+    image: {{ .Database.Image }}
+    container_name: {{ .Project.Name }}_db
+    environment:
+      POSTGRES_DB: {{ .Database.Name }}
+      POSTGRES_USER: {{ .Database.User }}
+      POSTGRES_PASSWORD: {{ .Database.Pass }}
+    ports:
+      - "{{ .Database.Port }}:5432"
+{{ end }}
