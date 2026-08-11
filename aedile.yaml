@@ -1,0 +1,37 @@
+project:
+  name: demo
+  environment: dev
+
+compose:
+  file: infrastructure/docker-compose.yaml
+
+docker:
+  project: demo
+
+metadata:
+  engine: postgres
+  image: postgres:17
+  host: localhost
+  port: 5432
+  user: myuser
+  pass: metaPa5s!
+  name: metadb
+
+storage:
+  image: minio/minio
+  container: demo_storage
+  user: admin
+  pass: demoP@ss!
+  api_port: 9000
+  web_port: 9001
+  command: "server /data --console-address "
+  storage: storage_data
+
+liquibase:
+  image: liquibase/liquibase:latest
+  name: demo_liquibase
+  working_dir: /liquibase/changelog
+  changelog: "./liquibase/changelog:/liquibase/changelog"
+  properties: "./liquibase/liquibase.properties:/liquibase/liquibase.properties"
+  lib: "./liquibase/drivers:/liquibase/lib"
+  dependency: "metadata_db"
