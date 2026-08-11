@@ -51,7 +51,7 @@ type StorageConfig struct {
 	WebPort     int    `yaml:"web_port"`
 	Container   string `yaml:"container"`
 	Command     string `yaml:"command"`
-	StorageData string `yaml:"storage_data"`
+	StorageData string `yaml:"storage"`
 }
 
 type LiquibaseConfig struct {
