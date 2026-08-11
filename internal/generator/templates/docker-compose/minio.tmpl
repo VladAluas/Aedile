@@ -11,5 +11,5 @@
       - "{{ .Storage.APIPort }}:9000"   # API
       - "{{ .Storage.WebPort }}:9001"   # Web UI
     volumes:
-      - storage_data:{{ .Storage.StorageData }}
+      - storage_data:/data
 {{end}}
