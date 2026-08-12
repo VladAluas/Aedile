@@ -2,11 +2,12 @@
   # Metadata Database for batch and source config
   metadata_db:
     image: {{ .Metadata.Image }}
-    container_name: {{ .Project.Name }}_db
     environment:
       POSTGRES_DB: {{ .Metadata.Name }}
       POSTGRES_USER: {{ .Metadata.User }}
       POSTGRES_PASSWORD: {{ .Metadata.Pass }}
     ports:
       - "{{ .Metadata.Port }}:5432"
+    volumes:
+      - db_data:/var/lib/postresql/data
 {{end}}

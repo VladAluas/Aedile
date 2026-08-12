@@ -2,7 +2,6 @@
   # Object Storage (S3-compatible via MinIO)
   storage:
     image: {{ .Storage.Image }}
-    container_name: {{ .Storage.Container }}
     command: {{ .Storage.Command }}":{{ .Storage.WebPort }}"
     environment:
       MINIO_ROOT_USER: {{ .Storage.User }}

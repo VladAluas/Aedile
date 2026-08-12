@@ -1,0 +1,48 @@
+name: Postgres DB
+
+description: PostgreSQL database service
+
+configuration:
+  database:
+    required: true
+    type: object
+
+    properties:
+      engine:
+        required: true
+        type: string
+        values:
+          - postgres
+
+      image:
+        required: false
+        type: string
+        default: postgres:17
+
+      host:
+        required: false
+        type: string
+        default: localhost
+        description: Database host
+
+      user:
+        required: true
+        type: string
+        description: Database username
+
+      pass:
+        required: true
+        type: string
+        description: Database password
+
+      name:
+        required: true
+        type: string
+        description: Database name
+
+      port:
+        required: false
+        type: integer
+        default: 5432
+        description: Host port
+

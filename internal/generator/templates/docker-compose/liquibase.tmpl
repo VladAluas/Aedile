@@ -2,7 +2,6 @@
   # Schema management (Liquibase)
   liquibase:
     image: {{ .Liquibase.Image }}
-    container_name: {{ .Liquibase.Name }}
     depends_on:
       - {{ .Liquibase.Dependency }}
     volumes:

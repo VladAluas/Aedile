@@ -1,7 +1,6 @@
 {{ define "postgres" }}
   db:
     image: {{ .Database.Image }}
-    container_name: {{ .Project.Name }}_db
     environment:
       POSTGRES_DB: {{ .Database.Name }}
       POSTGRES_USER: {{ .Database.User }}
