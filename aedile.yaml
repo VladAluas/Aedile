@@ -19,7 +19,6 @@ metadata:
 
 storage:
   image: minio/minio
-  container: demo_storage
   user: admin
   pass: demoP@ss!
   api_port: 9000
@@ -29,7 +28,6 @@ storage:
 
 liquibase:
   image: liquibase/liquibase:latest
-  name: demo_liquibase
   working_dir: /liquibase/changelog
   changelog: "./liquibase/changelog:/liquibase/changelog"
   properties: "./liquibase/liquibase.properties:/liquibase/liquibase.properties"
