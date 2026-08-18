@@ -1,0 +1,45 @@
+name: Postgres DB
+description: Database service dedicated to storing and analyzing centralized data
+
+configuration:
+  engine:
+    required: false
+    type: string
+    default: postgres
+    description: Database engine used by the target DB
+    values:
+      - postgres
+
+  image:
+    required: false
+    type: string
+    default: postgres:17
+    description: Database image used by Docker as a base for the DB
+    values:
+      - postgres:17
+
+  host:
+    required: true
+    type: string
+    description: Host for the DB
+
+  port:
+    required: false
+    type: integer
+    default: 5432
+    description: DB access port
+
+  user:
+    required: true
+    type: string
+    description: admin user for the DB
+
+  pass:
+    required: true
+    type: string
+    description: admin password for the DB
+
+  name:
+    required: true
+    type: string
+    desctiption: name of the DB
