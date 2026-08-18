@@ -1,0 +1,13 @@
+name: Project
+description: General information about the project
+
+configuration:
+  name:
+    required: true
+    type: string
+    description: Name of the project
+
+  environment:
+    required: true
+    type: string
+    description: target environment for the project
