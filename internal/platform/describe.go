@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/VladAluas/Aedile/internal/config"
 	"gopkg.in/yaml.v3"
@@ -54,7 +55,7 @@ func ShowTemplate(info *config.TemplateInfo) {
 
 		// Type: string
 		if prop.Type != "" {
-      fmt.Printf("    - type:           %v\n", prop.Type)
+			fmt.Printf("    - type:           %v\n", prop.Type)
 		}
 
 		// Default Values: any
@@ -64,7 +65,7 @@ func ShowTemplate(info *config.TemplateInfo) {
 
 		// Description: string
 		if prop.Description != "" {
-      fmt.Printf("    - description:    %v\n", prop.Description)
+			fmt.Printf("    - description:    %v\n", prop.Description)
 		}
 
 		// Accepted Values: list
@@ -72,4 +73,18 @@ func ShowTemplate(info *config.TemplateInfo) {
 			fmt.Printf("    - accepted values: %v\n", prop.Values)
 		}
 	}
+}
+
+func (p *Platform) ListServices(ctx context.Context) error {
+	files, err := os.ReadDir(templateInfo)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print("Available Services:\n")
+	for _, file := range files {
+		fmt.Printf("  - %s\n", strings.Replace(file.Name(), ".yaml", "", 1))
+	}
+
+	return nil
 }
