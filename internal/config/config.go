@@ -29,8 +29,8 @@ type MetadataConfig struct {
 	User   string `yaml:"user"`
 	Host   string `yaml:"host"`
 	Pass   string `yaml:"pass"`
-	Port   int    `yaml:"port"`
 	Name   string `yaml:"name"`
+	Port   int    `yaml:"port"`
 }
 
 type DatabaseConfig struct {
