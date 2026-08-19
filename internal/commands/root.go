@@ -17,6 +17,7 @@ func Root() *cobra.Command {
 	root.AddCommand(NewCleanCommand())
 	root.AddCommand(NewRunCommand())
 	root.AddCommand(NewDBCommand())
+	root.AddCommand(NewServicesCommand())
 
 	return root
 }

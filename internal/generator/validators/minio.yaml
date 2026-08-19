@@ -1,0 +1,43 @@
+name: MinIO
+description: Cloud storage solution
+
+configuration:
+  image:
+    required: false
+    type: string
+    default: minio/minio
+    description: default docker image used for the storage solution
+
+  user:
+    required: true
+    type: string
+    description: admin user for the solution
+
+  pass:
+    required: true
+    type: string
+    description: admin password for the solution
+
+  api_port:
+    required: false
+    type: int
+    default: 9000
+    description: port for APIs
+
+  web_port:
+    required: false
+    type: int
+    default: 9001
+    description: port for Web connections
+
+  command:
+    required: false
+    type: string
+    default: "server /data --console-address "
+    description: no idea what it does
+
+  storage:
+    required: false
+    type: string
+    default: storage_data
+    description: name of the storage volume

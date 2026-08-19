@@ -1,0 +1,14 @@
+{{ define "minio" }}
+  # Object Storage (S3-compatible via MinIO)
+  storage:
+    image: {{ .Storage.Image }}
+    command: {{ .Storage.Command }}":{{ .Storage.WebPort }}"
+    environment:
+      MINIO_ROOT_USER: {{ .Storage.User }}
+      MINIO_ROOT_PASSWORD: {{ .Storage.Pass }}
+    ports:
+      - "{{ .Storage.APIPort }}:9000"   # API
+      - "{{ .Storage.WebPort }}:9001"   # Web UI
+    volumes:
+      - storage_data:/data
+{{end}}

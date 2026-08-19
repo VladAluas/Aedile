@@ -10,7 +10,7 @@ import (
 func Load() (*Config, error) {
 	var cfg Config
 
-	data, err := os.ReadFile("flow.yaml")
+	data, err := os.ReadFile("aedile.yaml")
 	if err != nil {
 		return nil, err
 	}

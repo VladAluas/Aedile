@@ -1,0 +1,9 @@
+name: Compose
+description: Location for the Docker compose file
+
+configuration:
+  file:
+    required: false
+    type: string
+    default: infrastructure/docker-compose.yaml
+    description: default location for the Docker compose file

@@ -13,11 +13,11 @@ import (
 func Connect(cfg *config.Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		cfg.Database.Host,
-		cfg.Database.Port,
-		cfg.Database.User,
-		cfg.Database.Pass,
-		cfg.Database.Name,
+		cfg.Metadata.Host,
+		cfg.Metadata.Port,
+		cfg.Metadata.User,
+		cfg.Metadata.Pass,
+		cfg.Metadata.Name,
 	)
 
 	db, err := sql.Open("postgres", dsn)

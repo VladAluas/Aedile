@@ -1,0 +1,39 @@
+name: Liquibase
+description: Migration service for the DB schemas. Default use for the Metadata DB
+
+configuration:
+  image:
+    required: false
+    type: string
+    default: liquibase/liquibase:latest
+    description: Liquibase image used by Docker as a base for the DB
+
+  working_dir:
+    required: false
+    type: string
+    default: /liquibase/changelog
+    description: Working directory for docker volume
+
+  changelog:
+    required: false
+    type: string
+    default: ./liquibase/changelog:/liquibase/changelog
+    description: Changelog file for validation and update
+
+  properties:
+    required: false
+    type: string
+    default: ./liquibase/liquibase.properties:/liquibase/liquibase.properties
+    description: Liquibase.properties location
+
+  lib:
+    required: false
+    type: string
+    default: ./liquibase/drivers:/liquibase/lib
+    description: liquibase lib
+
+  dependency:
+    required: false
+    type: string
+    default: metadata_db
+    description: DB for which the liquibase service is deployed

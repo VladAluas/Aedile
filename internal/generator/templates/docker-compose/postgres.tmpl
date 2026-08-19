@@ -1,0 +1,13 @@
+{{ define "postgres" }}
+  db:
+    image: {{ .Database.Image }}
+    environment:
+      POSTGRES_DB: {{ .Database.Name }}
+      POSTGRES_USER: {{ .Database.User }}
+      POSTGRES_PASSWORD: {{ .Database.Pass }}
+    ports:
+      - "{{ .Database.Port }}:5432"
+
+    volumes:
+      - db_data:/var/lib/postgresql/data
+{{ end }}

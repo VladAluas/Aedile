@@ -1,0 +1,3 @@
+/infrastructure/docker-compose.yaml
+/rm.yaml
+/infrastructure/liquibase/liquibase.properties
