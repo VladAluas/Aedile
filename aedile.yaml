@@ -19,7 +19,7 @@ metadata:
 
 storage:
   image: minio/minio
-  user: admin
+  user: demoadmin
   pass: demoP@ss!
   api_port: 9000
   web_port: 9001
