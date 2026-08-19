@@ -1,0 +1,9 @@
+{{ define "etl" }}
+  # ETL App
+  etl:
+    image: {{ .Etl.Image }}:{{ .Etl.Tag }}
+    depends_on:
+      - metadata_db
+      - storage
+{{end}}
+

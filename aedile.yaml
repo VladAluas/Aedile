@@ -33,3 +33,7 @@ liquibase:
   properties: "./liquibase/liquibase.properties:/liquibase/liquibase.properties"
   lib: "./liquibase/drivers:/liquibase/lib"
   dependency: "metadata_db"
+
+etl:
+  image: docker.io/vladaluas/sisyphus
+  tag: "0.10.0"

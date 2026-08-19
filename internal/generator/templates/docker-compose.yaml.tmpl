@@ -2,13 +2,13 @@ services:
 {{ template "metadata" . }}
 {{ template "minio" . }}
 {{ template "liquibase" . }}
-
 {{- if eq .Database.Engine "postgres" -}}
 {{- template "postgres" . }}
 {{- end }}
 {{- if eq .Database.Engine "sqlite" -}}
 {{ template "sqlite" . }}
 {{- end }}
+{{ template "etl" . }}
 
 volumes:
   db_data:
