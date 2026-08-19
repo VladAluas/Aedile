@@ -91,6 +91,22 @@ func (p *Platform) ListServices(ctx context.Context) error {
 	return nil
 }
 
-func (p *Platform) ValidateServices(ctx context.Context) error {
-	return nil
-}
+// Need to implement at a later date
+//
+// func (p *Platform) ValidateServices(ctx context.Context) error {
+// 	cfg, err := config.Load()
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	files, err := os.ReadDir(templateInfo)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	for _, file := range files {
+// 		fmt.Print(cfg[file])
+// 	}
+//
+// 	return nil
+// }
