@@ -1,5 +1,5 @@
 name: Compose
-description: location for the Docker compose file
+description: Location for the Docker compose file
 
 configuration:
   file:
