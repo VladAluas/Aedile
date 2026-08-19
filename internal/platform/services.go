@@ -13,7 +13,7 @@ import (
 
 const templateInfo = "internal/generator/validators/"
 
-func (p *Platform) DescribeTemplate(ctx context.Context, service string) error {
+func (p *Platform) DescribeService(ctx context.Context, service string) error {
 	templatePath := filepath.Join(templateInfo, service+".yaml")
 
 	info, err := GetTemplInfo(templatePath)
@@ -80,11 +80,17 @@ func (p *Platform) ListServices(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	fmt.Print("Available Services:\n")
+
 	for _, file := range files {
-		fmt.Printf("  - %s\n", strings.Replace(file.Name(), ".yaml", "", 1))
+		clFile := strings.Replace(file.Name(), ".yaml", "", 1)
+
+		fmt.Printf("  - %s\n", clFile)
 	}
 
+	return nil
+}
+
+func (p *Platform) ValidateServices(ctx context.Context) error {
 	return nil
 }
