@@ -25,7 +25,7 @@ func NewCleanCommand() *cobra.Command {
 				return err
 			}
 
-			return p.Clean(context.Background(), all)
+			return p.Clean(context.Background(), all, images)
 		},
 	}
 
