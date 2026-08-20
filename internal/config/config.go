@@ -8,6 +8,7 @@ type Config struct {
 	Database  DatabaseConfig  `yaml:"database"`
 	Storage   StorageConfig   `yaml:"storage"`
 	Liquibase LiquibaseConfig `yaml:"liquibase"`
+	Etl       EtlConfig       `yaml:"etl"`
 }
 
 type ProjectConfig struct {
@@ -62,4 +63,9 @@ type LiquibaseConfig struct {
 	Properties string `yaml:"properties"`
 	Dependency string `yaml:"dependency"`
 	Lib        string `yaml:"lib"`
+}
+
+type EtlConfig struct {
+	Image string `yaml:"image"`
+	Tag   string `yaml:"tag"`
 }

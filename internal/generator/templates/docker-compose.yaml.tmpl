@@ -2,6 +2,7 @@ services:
 {{ template "metadata" . }}
 {{ template "minio" . }}
 {{ template "liquibase" . }}
+{{ template "etl" . }}
 
 {{- if eq .Database.Engine "postgres" -}}
 {{- template "postgres" . }}

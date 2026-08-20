@@ -1,0 +1,20 @@
+{{- define "etl" }}
+  etl:
+    image: {{ .Etl.Image }}:{{ .Etl.Tag }}
+
+    depends_on:
+      - metadata_db
+      - storage
+
+    environment:
+      METADATA_HOST: metadata_db
+      METADATA_PORT: 5432
+      METADATA_USER: {{ .Metadata.User }}
+      METADATA_PASSWORD: {{ .Metadata.Pass }}
+      METADATA_NAME: {{ .Metadata.Name }}
+
+      STORAGE_ENDPOINT: storage:9000
+      STORAGE_ACCESS_KEY: {{ .Storage.User }}
+      STORAGE_SECRET_KEY: {{ .Storage.Pass }}
+{{- end }}
+

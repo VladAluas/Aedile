@@ -9,14 +9,13 @@ import (
 )
 
 func NewCleanCommand() *cobra.Command {
-
-	var all bool
+	var all 	 bool
+	var images bool
 
 	cmd := &cobra.Command{
 		Use:   "clean",
 		Short: "Stop the platform",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			cfg, err := config.Load()
 			if err != nil {
 				return err
@@ -26,7 +25,7 @@ func NewCleanCommand() *cobra.Command {
 				return err
 			}
 
-			return p.Clean(context.Background(), all)
+			return p.Clean(context.Background(), all, images)
 		},
 	}
 
@@ -35,6 +34,13 @@ func NewCleanCommand() *cobra.Command {
 		"all",
 		false,
 		"Remove volumes",
+	)
+
+	cmd.Flags().BoolVar(
+		&images,
+		"images",
+		false,
+		"Remove images",
 	)
 
 	return cmd
