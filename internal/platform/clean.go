@@ -10,7 +10,7 @@ func (p *Platform) Clean(ctx context.Context, all bool, images bool) error {
 	}
 
 	if images {
-		args = append(args, "-rmi", "all")
+		args = append(args, "--rmi", "all")
 	}
 
 	return p.docker.Compose(ctx, args...)

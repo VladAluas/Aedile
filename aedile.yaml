@@ -19,7 +19,7 @@ metadata:
 
 storage:
   image: minio/minio
-  user: demoadmin
+  user: admin
   pass: demoP@ss!
   api_port: 9000
   web_port: 9001
@@ -36,4 +36,4 @@ liquibase:
 
 etl:
   image: docker.io/vladaluas/sisyphus
-  tag: "0.10.0"
+  tag: 0.10.0

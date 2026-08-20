@@ -10,8 +10,10 @@ import (
 
 func NewRunCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "run",
-		Short: "Run DataForge",
+		Use:                "run [args...]",
+		Short:              "Run the ETL application",
+		DisableFlagParsing: true,
+
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
 			if err != nil {
@@ -22,7 +24,8 @@ func NewRunCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return p.Run(context.Background())
+
+			return p.Run(context.Background(), args...)
 		},
 	}
 }
