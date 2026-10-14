@@ -1,0 +1,11 @@
+{{ define "openbao" }}
+  # Key Vault
+  openbao:
+    image: {{ .OpenBao.Image }}
+    container_name: {{ .OpenBao.Container }}
+    ports:
+      - "{{ .OpenBao.Port }}:8200"
+    volumes:
+      - {{ .OpenBao.Data }}:/openbao/data
+    command: server
+{{end}}

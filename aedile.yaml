@@ -13,14 +13,10 @@ metadata:
   image: postgres:17
   host: localhost
   port: 5432
-  user: myuser
-  pass: metaPa5s!
   name: metadb
 
 storage:
-  image: minio/minio
-  user: admin
-  pass: demoP@ss!
+  image: quay.io/minio/aistor/minio
   api_port: 9000
   web_port: 9001
   command: "server /data --console-address "
@@ -37,3 +33,21 @@ liquibase:
 etl:
   image: docker.io/vladaluas/sisyphus
   tag: 0.10.0
+
+openbao:
+  enabled: true
+  image: quay.io/openbao/openbao:2.5
+  container: demo_openbao
+  host: localhost
+  port: 8200
+  data: openbao_data
+  mount: secret
+
+secrets:
+  metadata:
+    username: myuser
+    password: metaPa5s!
+
+  storage:
+    username: admin
+    password: demoP@ss!
