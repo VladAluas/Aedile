@@ -1,14 +1,16 @@
 package config
 
 type Config struct {
-	Project   ProjectConfig   `yaml:"project"`
-	Compose   ComposeConfig   `yaml:"compose"`
-	Docker    DockerConfig    `yaml:"docker"`
-	Metadata  MetadataConfig  `yaml:"metadata"`
-	Database  DatabaseConfig  `yaml:"database"`
-	Storage   StorageConfig   `yaml:"storage"`
-	Liquibase LiquibaseConfig `yaml:"liquibase"`
-	Etl       EtlConfig       `yaml:"etl"`
+	Project   ProjectConfig             `yaml:"project"`
+	Compose   ComposeConfig             `yaml:"compose"`
+	Docker    DockerConfig              `yaml:"docker"`
+	Metadata  MetadataConfig            `yaml:"metadata"`
+	Database  DatabaseConfig            `yaml:"database"`
+	Storage   StorageConfig             `yaml:"storage"`
+	Liquibase LiquibaseConfig           `yaml:"liquibase"`
+	Etl       EtlConfig                 `yaml:"etl"`
+	OpenBao   OpenBaoConfig             `yaml:"openbao"`
+	Secrets   map[string]map[string]any `yaml:"secrets"`
 }
 
 type ProjectConfig struct {
@@ -68,4 +70,14 @@ type LiquibaseConfig struct {
 type EtlConfig struct {
 	Image string `yaml:"image"`
 	Tag   string `yaml:"tag"`
+}
+
+type OpenBaoConfig struct {
+	Enabled   bool   `yaml:"enabled"`
+	Image     string `yaml:"image"`
+	Container string `yaml:"container"`
+	Host      string `yaml:"host"`
+	Port      int    `yaml:"port"`
+	Data      string `yaml:"data"`
+	Mount     string `yaml:"mount"`
 }
