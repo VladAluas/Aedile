@@ -12,7 +12,7 @@ func NewSecretsCommand() *cobra.Command {
 	var seed bool
 
 	cmd := &cobra.Command{
-		Use:   "secrests",
+		Use:   "secrets",
 		Short: "Manage OpenBao Secrets",
 
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -6,11 +6,8 @@ services:
 {{ template "etl" . }}
 {{ template "openbao" . }}
 
-{{ template "postgres" . }}
-
 volumes:
   db_data:
   storage_data:
   openbao_data:
-
-{{end}}
+{{- end }}
