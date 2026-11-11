@@ -8,8 +8,8 @@ func Root() *cobra.Command {
 		Use:   "aedile",
 		Short: "Developer CLI for the DataForge platform",
 		Long: `Flow manages the local DataForge platform.
-					 It provides commands to manage infrastructure,
-					 database migrations, and ETL execution.
+					It provides commands to manage infrastructure,
+					database migrations, and ETL execution.
 					`,
 	}
 
@@ -18,6 +18,7 @@ func Root() *cobra.Command {
 	root.AddCommand(NewRunCommand())
 	root.AddCommand(NewDBCommand())
 	root.AddCommand(NewServicesCommand())
+	root.AddCommand(NewSecretsCommand())
 
 	return root
 }
