@@ -1,11 +1,14 @@
-{{ define "openbao" }}
-  # Key Vault
+{{- define "openbao" }}
   openbao:
     image: {{ .OpenBao.Image }}
     container_name: {{ .OpenBao.Container }}
+    command: server -config=/openbao/config/config.hcl
     ports:
-      - "{{ .OpenBao.Port }}:8200"
+      - "127.0.0.1:8200:8200"
     volumes:
-      - {{ .OpenBao.Data }}:/openbao/data
-    command: server
-{{end}}
+      - ./openbao/config.hcl:/openbao/config/config.hcl:ro
+      - openbao_data:/openbao/data
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+{{- end }}
