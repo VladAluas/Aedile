@@ -9,7 +9,7 @@ import (
 )
 
 func NewCleanCommand() *cobra.Command {
-	var all 	 bool
+	var all bool
 	var images bool
 
 	cmd := &cobra.Command{

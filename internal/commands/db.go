@@ -41,7 +41,7 @@ func NewMigrateCommand() *cobra.Command {
 
 func NewSeedCommand() *cobra.Command {
 	return &cobra.Command{
-		Use: "seed",
+		Use:   "seed",
 		Short: "Run Liquibase seed",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()

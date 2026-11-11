@@ -41,7 +41,7 @@ func Seed(ctx context.Context, db *sql.DB, cfg *Config) error {
 					}
 					fmt.Printf("New parameter added: %s\n", prm.ParameterID)
 
-					if err := UpsertModuleParameters(ctx, tx,  mdl, prm); err != nil {
+					if err := UpsertModuleParameters(ctx, tx, mdl, prm); err != nil {
 						return err
 					}
 				}
@@ -60,7 +60,7 @@ func Seed(ctx context.Context, db *sql.DB, cfg *Config) error {
 						return err
 					}
 				}
-	 		}
+			}
 		}
 	}
 

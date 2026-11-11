@@ -1,4 +1,3 @@
-// Package config helps translate the yaml file to docker
 package config
 
 import (

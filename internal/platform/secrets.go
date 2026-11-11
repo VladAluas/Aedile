@@ -24,11 +24,3 @@ func (p *Platform) SeedSecrets(ctx context.Context) error {
 
 	return client.Seed(ctx, p.cfg.Secrets)
 }
-
-
-
-
-
-
-
-

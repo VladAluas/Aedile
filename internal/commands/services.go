@@ -52,7 +52,7 @@ func DescribeCommand() *cobra.Command {
 
 func ListCommand() *cobra.Command {
 	return &cobra.Command{
-		Use: "list",
+		Use:   "list",
 		Short: "List all the services needed for inital configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
