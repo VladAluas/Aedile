@@ -1,0 +1,22 @@
+name: OpenBao
+description: Key Vault Solution
+
+configuration:
+  image:
+    required: false
+    type: string
+    default: quay.io/openbao/openbao:2.5
+    description: Key Vault image used by Docker
+    values:
+      - quay.io/openbao/openbao:2.5
+
+  host:
+    required: true
+    type: string
+    description: Host for the KeyVault
+
+  port:
+    required: false
+    type: integer
+    default: 8200
+    description: KV access port

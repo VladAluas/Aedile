@@ -1,13 +1,21 @@
 {{- define "docker-compose" }}
 services:
-{{ template "metadata" . }}
-{{ template "minio" . }}
+{{- if eq .Metadata.Engine "postgres" }}
+{{ template "postgres" . }}
+{{- end }}
+{{- if .Storage.Image }}
+{{ template "storage" . }}
+{{- end }}
+{{- if .OpenBao.Enabled }}
+{{ template "openbao" . }}
+{{- end }}
 {{ template "liquibase" . }}
 {{ template "etl" . }}
-{{ template "openbao" . }}
 
 volumes:
   db_data:
   storage_data:
+{{- if .OpenBao.Enabled }}
   openbao_data:
+{{- end }}
 {{- end }}

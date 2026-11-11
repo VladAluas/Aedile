@@ -3,8 +3,10 @@ package generator
 
 import (
 	"embed"
-	"text/template"
+	"fmt"
 	"os"
+	"path/filepath"
+	"text/template"
 
 	"github.com/VladAluas/Aedile/internal/config"
 )
@@ -28,5 +30,34 @@ func GenerateCompose(cfg *config.Config) error {
 	}
 	defer file.Close()
 
-	return tmpl.Execute(file, cfg)
+	if err := tmpl.Execute(file, cfg); err != nil {
+		return fmt.Errorf("generate compose: %w", err)
+	}
+
+	if cfg.OpenBao.Enabled {
+		if err := copyOpenBaoConfig(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func copyOpenBaoConfig() error {
+	data, err := templates.ReadFile("templates/openbao/config.hcl")
+	if err != nil {
+		return fmt.Errorf("read OpenBao config: %w", err)
+	}
+
+	path := "infrastructure/openbao/config.hcl"
+
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("create OpenBao directory: %w", err)
+	}
+
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		return fmt.Errorf("write OpenBao config: %w", err)
+	}
+
+	return nil
 }

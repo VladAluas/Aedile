@@ -5,5 +5,16 @@
     depends_on:
       - metadata_db
       - storage
+      - openbao
+
+    environment:
+      OPENBAO_ADDR: http://openbao:8200
+      OPENBAO_MOUNT: {{ .OpenBao.Mount }}
+      OPENBAO_ROLE_ID_FILE: /run/secrets/openbao_role_id
+      OPENBAO_SECRET_ID_FILE: /run/secrets/openbao_secret_id
+
+    secrets:
+      - openbao_role_id
+      - openbao_secret_id
 {{- end }}
 
