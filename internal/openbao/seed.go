@@ -3,20 +3,29 @@ package openbao
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
-func (c *Client) Seed(
-	ctx context.Context,
-	secrests map[string]map[string]any,
-) error {
+// Client Seed
+func (c *Client) Seed(ctx context.Context, secrets map[string]map[string]string) error {
 	kv := c.client.KVv2(c.mount)
 
-	for path, values := range secrests {
-		if _, err := kv.Put(ctx, path, values); err != nil {
-			return fmt.Errorf("failed to seed secret %q: %w",
-				path,
-				err,
-			)
+	for path, values := range secrets {
+		path = strings.Trim(path, "/")
+		if !safesecretPath.MatchString(path) || path == "" || strings.Contains(path, "..") {
+			return fmt.Errorf("invalid secret path %q", path)
+		}
+		if len(values) == 0 {
+			return fmt.Errorf("secret %q has no values", path)
+		}
+
+		data := make(map[string]any, len(values))
+		for key, value := range values {
+			data[key] = value
+		}
+
+		if _, err := kv.Put(ctx, path, data); err != nil {
+			return fmt.Errorf("seed secret %q: %w", path, err)
 		}
 	}
 
