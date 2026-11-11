@@ -1,16 +1,17 @@
+// Package config helps translate the yaml file to docker
 package config
 
 type Config struct {
-	Project   ProjectConfig             `yaml:"project"`
-	Compose   ComposeConfig             `yaml:"compose"`
-	Docker    DockerConfig              `yaml:"docker"`
-	Metadata  MetadataConfig            `yaml:"metadata"`
-	Database  DatabaseConfig            `yaml:"database"`
-	Storage   StorageConfig             `yaml:"storage"`
-	Liquibase LiquibaseConfig           `yaml:"liquibase"`
-	Etl       EtlConfig                 `yaml:"etl"`
-	OpenBao   OpenBaoConfig             `yaml:"openbao"`
-	Secrets   map[string]map[string]any `yaml:"secrets"`
+	Project   ProjectConfig                `yaml:"project"`
+	Compose   ComposeConfig                `yaml:"compose"`
+	Docker    DockerConfig                 `yaml:"docker"`
+	Metadata  MetadataConfig               `yaml:"metadata"`
+	Database  DatabaseConfig               `yaml:"database"`
+	Storage   StorageConfig                `yaml:"storage"`
+	Liquibase LiquibaseConfig              `yaml:"liquibase"`
+	Etl       EtlConfig                    `yaml:"etl"`
+	OpenBao   OpenBaoConfig                `yaml:"openbao"`
+	Secrets   map[string]map[string]string `yaml:"secrets"`
 }
 
 type ProjectConfig struct {
@@ -80,4 +81,13 @@ type OpenBaoConfig struct {
 	Port      int    `yaml:"port"`
 	Data      string `yaml:"data"`
 	Mount     string `yaml:"mount"`
+
+	// Optional API address, e.g. https://openbao.example.com:8200
+	// If empty, Host and Port are used.
+	Address string `yaml:"address"`
+	TLS     bool   `yaml:"tls"`
+
+	AppRole   string   `yaml:"approle"`
+	Policy    string   `yaml:"policy"`
+	ReadPaths []string `yaml:"read_paths"`
 }
