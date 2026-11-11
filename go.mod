@@ -1,8 +1,9 @@
 module github.com/VladAluas/Aedile
 
-go 1.25.4
+go 1.26.0
 
 require (
+	github.com/charmbracelet/x/term v0.2.2
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.12.3
 	github.com/openbao/openbao/api/v2 v2.7.1
@@ -27,6 +28,7 @@ require (
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	golang.org/x/net v0.58.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 )
